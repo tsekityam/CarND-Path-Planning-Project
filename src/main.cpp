@@ -359,6 +359,11 @@ int main() {
             car_s = end_path_s;
           }
 
+          int current_lane = floor(car_d/4);
+          if (current_lane == lane) {
+            lane = best_lane(j);
+          }
+
           auto tooClose = false;
 
           for (size_t i = 0; i < sensor_fusion.size(); i++) {
@@ -374,7 +379,6 @@ int main() {
 
               if (check_car_s > car_s && check_car_s-car_s < 10) {
                 tooClose = true;
-                lane = best_lane(j);
               }
             }
           }
