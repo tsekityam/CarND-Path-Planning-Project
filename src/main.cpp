@@ -170,7 +170,7 @@ double cost_fesible_lane(int target_lane) {
   }
 }
 
-double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_json sensor_fusion) {
+double cost_speed(int target_lane, double car_s, json::basic_json sensor_fusion) {
   int cloest_car_s = car_s + 50;
   double cloest_car_check_speed = 50;
 
@@ -256,7 +256,7 @@ int best_lane(json::basic_json j) {
     int cost = 0;
 
     double cost_a = cost_fesible_lane(proposed_lane);
-    double cost_b = cost_speed(proposed_lane, car_s, previous_path_x.size(), sensor_fusion);
+    double cost_b = cost_speed(proposed_lane, car_s, sensor_fusion);
     double cost_c = cost_collision(proposed_lane, car_s, car_d, previous_path_x.size(), sensor_fusion);
     double cost_d = cost_middle_lane(proposed_lane);
     cost += cost_a;
