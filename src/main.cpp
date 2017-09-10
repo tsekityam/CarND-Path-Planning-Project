@@ -217,7 +217,7 @@ double cost_collision(int target_lane, double car_s, double car_d, size_t prev_s
 
       check_car_s += prev_size * .02 * check_speed;
 
-      if (car_s < check_car_s - 5 && check_car_s < car_s + 30) {
+      if (car_s < check_car_s && check_car_s < car_s + 30) {
         return 999;
       }
     }
