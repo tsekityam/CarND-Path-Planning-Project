@@ -193,7 +193,6 @@ double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_j
     }
   }
 
-  cout << "speed at lane: " << target_lane << "\tdist: " << cloest_car_s - car_s << endl;
   return 50 - min(cloest_car_check_speed, 50.0);
 }
 
@@ -217,8 +216,6 @@ double cost_collision(int target_lane, double car_s, double car_d, size_t prev_s
       check_car_s += prev_size * .02 * check_speed;
 
       if (car_s < check_car_s - 5 && check_car_s < car_s + 30) {
-        cout << "car_s: " << car_s << "\tcheck_car_s: " << check_car_s << endl;
-        cout << "collision at lane: " << target_lane << "\tdist: " << check_car_s - car_s << endl;
         return 999;
       }
     }
@@ -251,6 +248,7 @@ int best_lane(json::basic_json j) {
   int best_lane = current_lane;
   int lowest_cost = INT_MAX;
 
+  cout << "**********" << endl;
   for (int i = -1; i <= 1; i++) {
     int proposed_lane = current_lane + i;
     int cost = 0;
