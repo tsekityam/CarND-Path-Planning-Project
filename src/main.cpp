@@ -377,7 +377,7 @@ int main() {
 
               check_car_s += prev_size * .02 * check_speed;
 
-              if (check_car_s > car_s && check_car_s-car_s < 10) {
+              if (check_car_s > car_s && check_car_s-car_s < 30) {
                 tooClose = true;
               }
             }
