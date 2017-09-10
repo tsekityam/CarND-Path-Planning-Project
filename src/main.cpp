@@ -261,6 +261,7 @@ int best_lane(json::basic_json j) {
     double cost_d = cost_middle_lane(proposed_lane);
     cost += cost_a;
     cost += cost_b;
+    cost += cost_c;
     cost += cost_d;
 
     cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << "\tcollision: " << cost_c << "\tmiddle: " << cost_d << endl;
