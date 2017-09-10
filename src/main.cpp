@@ -160,6 +160,86 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 
 }
 
+double cost_fesible_lane(int target_lane) {
+  if (target_lane < 0) {
+    return 999;
+  } else if (target_lane > 2) {
+    return 999;
+  } else {
+    return 0;
+  }
+}
+
+double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_json sensor_fusion) {
+  int cloest_car_s = INT_MAX;
+  double cloest_car_check_speed = 50;
+
+  for (size_t i = 0; i < sensor_fusion.size(); i++) {
+    auto car = sensor_fusion[i];
+
+    double d = car[6];
+    if (d < 2+4*target_lane+2 && d > 2+4*target_lane-2) {
+      double vx = car[3];
+      double vy = car[4];
+      auto check_speed = sqrt(pow(vx, 2) + pow(vy, 2));
+      double check_car_s = car[5];
+
+      check_car_s += prev_size * .02 * check_speed;
+
+      if (check_car_s > car_s && check_car_s - car_s < cloest_car_s - car_s) {
+        cloest_car_s = check_car_s;
+        cloest_car_check_speed = check_speed;
+      }
+    }
+  }
+
+  return 50 - min(cloest_car_check_speed, 50.0);
+}
+
+int best_lane(json::basic_json j) {
+  // Main car's localization Data
+  double car_x = j[1]["x"];
+  double car_y = j[1]["y"];
+  double car_s = j[1]["s"];
+  double car_d = j[1]["d"];
+  double car_yaw = j[1]["yaw"];
+  double car_speed = j[1]["speed"];
+
+  // Previous path data given to the Planner
+  json::basic_json previous_path_x = j[1]["previous_path_x"];
+  json::basic_json previous_path_y = j[1]["previous_path_y"];
+  // Previous path's end s and d values
+  double end_path_s = j[1]["end_path_s"];
+  double end_path_d = j[1]["end_path_d"];
+
+  // Sensor Fusion Data, a list of all other cars on the same side of the road.
+  json::basic_json sensor_fusion = j[1]["sensor_fusion"];
+
+  int current_lane = floor(car_d/4);
+
+  int best_lane = current_lane;
+  int lowest_cost = INT_MAX;
+
+  for (int i = -1; i <= 1; i++) {
+    int proposed_lane = current_lane + i;
+    int cost = 0;
+
+    double cost_a = cost_fesible_lane(proposed_lane);
+    double cost_b = cost_speed(proposed_lane, car_s, previous_path_x.size(), sensor_fusion);
+    cost += cost_a;
+    cost += cost_b;
+
+    cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << endl;
+
+    if (cost < lowest_cost) {
+      lowest_cost = cost;
+      best_lane = proposed_lane;
+    }
+  }
+
+  return best_lane;
+}
+
 int main() {
   uWS::Hub h;
 
@@ -238,6 +318,8 @@ int main() {
           // Sensor Fusion Data, a list of all other cars on the same side of the road.
           json::basic_json sensor_fusion = j[1]["sensor_fusion"];
 
+          lane = floor(car_d/4);
+
           int prev_size = previous_path_x.size();
 
           if (prev_size > 0) {
@@ -259,9 +341,7 @@ int main() {
 
               if (check_car_s > car_s && check_car_s-car_s < 30) {
                 tooClose = true;
-                if (lane > 0) {
-                  lane = 0;
-                }
+                lane = best_lane(j);
               }
             }
           }
