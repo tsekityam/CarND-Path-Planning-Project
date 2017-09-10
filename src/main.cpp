@@ -372,7 +372,7 @@ int main() {
 
               check_car_s += prev_size * .02 * check_speed;
 
-              if (check_car_s > car_s && check_car_s-car_s < 30) {
+              if (check_car_s > car_s && check_car_s-car_s < 10) {
                 tooClose = true;
                 lane = best_lane(j);
               }
