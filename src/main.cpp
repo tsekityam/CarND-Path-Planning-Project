@@ -196,6 +196,10 @@ double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_j
   return 50 - min(cloest_car_check_speed, 50.0);
 }
 
+double cost_middle_lane(int target_lane) {
+  return abs((1 - target_lane) * 2);
+}
+
 double cost_collision(int target_lane, double car_s, double car_d, size_t prev_size, json::basic_json sensor_fusion) {
   int current_lane = floor(car_d/4);
 
@@ -256,11 +260,12 @@ int best_lane(json::basic_json j) {
     double cost_a = cost_fesible_lane(proposed_lane);
     double cost_b = cost_speed(proposed_lane, car_s, previous_path_x.size(), sensor_fusion);
     double cost_c = cost_collision(proposed_lane, car_s, car_d, previous_path_x.size(), sensor_fusion);
+    double cost_d = cost_middle_lane(proposed_lane);
     cost += cost_a;
     cost += cost_b;
-    cost += cost_c;
+    cost += cost_d;
 
-    cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << "\tcollision: " << cost_c << endl;
+    cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << "\tcollision: " << cost_c << "\tmiddle: " << cost_d << endl;
 
     if (cost < lowest_cost) {
       lowest_cost = cost;
