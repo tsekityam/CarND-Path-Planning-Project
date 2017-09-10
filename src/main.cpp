@@ -171,7 +171,7 @@ double cost_fesible_lane(int target_lane) {
 }
 
 double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_json sensor_fusion) {
-  int cloest_car_s = INT_MAX;
+  int cloest_car_s = car_s + 50;
   double cloest_car_check_speed = 50;
 
   for (size_t i = 0; i < sensor_fusion.size(); i++) {
@@ -193,6 +193,7 @@ double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_j
     }
   }
 
+  cout << "speed at lane: " << target_lane << "\tdist: " << cloest_car_s - car_s << endl;
   return 50 - min(cloest_car_check_speed, 50.0);
 }
 
