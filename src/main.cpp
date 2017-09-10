@@ -184,8 +184,6 @@ double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_j
       auto check_speed = sqrt(pow(vx, 2) + pow(vy, 2));
       double check_car_s = car[5];
 
-      check_car_s += prev_size * .02 * check_speed;
-
       if (check_car_s > car_s && check_car_s - car_s < cloest_car_s - car_s) {
         cloest_car_s = check_car_s;
         cloest_car_check_speed = check_speed;
