@@ -196,6 +196,36 @@ double cost_speed(int target_lane, double car_s, size_t prev_size, json::basic_j
   return 50 - min(cloest_car_check_speed, 50.0);
 }
 
+double cost_collision(int target_lane, double car_s, double car_d, size_t prev_size, json::basic_json sensor_fusion) {
+  int current_lane = floor(car_d/4);
+
+  if (current_lane == target_lane) {
+    return 0;
+  }
+
+  for (size_t i = 0; i < sensor_fusion.size(); i++) {
+    auto car = sensor_fusion[i];
+
+    double d = car[6];
+    if (d < 2+4*target_lane+2 && d > 2+4*target_lane-2) {
+      double vx = car[3];
+      double vy = car[4];
+      auto check_speed = sqrt(pow(vx, 2) + pow(vy, 2));
+      double check_car_s = car[5];
+
+      check_car_s += prev_size * .02 * check_speed;
+
+      if (car_s < check_car_s - 5 && check_car_s < car_s + 30) {
+        cout << "car_s: " << car_s << "\tcheck_car_s: " << check_car_s << endl;
+        cout << "collision at lane: " << target_lane << "\tdist: " << check_car_s - car_s << endl;
+        return 999;
+      }
+    }
+  }
+
+  return 0;
+}
+
 int best_lane(json::basic_json j) {
   // Main car's localization Data
   double car_x = j[1]["x"];
@@ -226,10 +256,12 @@ int best_lane(json::basic_json j) {
 
     double cost_a = cost_fesible_lane(proposed_lane);
     double cost_b = cost_speed(proposed_lane, car_s, previous_path_x.size(), sensor_fusion);
+    double cost_c = cost_collision(proposed_lane, car_s, car_d, previous_path_x.size(), sensor_fusion);
     cost += cost_a;
     cost += cost_b;
+    cost += cost_c;
 
-    cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << endl;
+    cout << "line: " << proposed_lane << "\tfesible: " << cost_a << "\tspeed: " << cost_b << "\tcollision: " << cost_c << endl;
 
     if (cost < lowest_cost) {
       lowest_cost = cost;
