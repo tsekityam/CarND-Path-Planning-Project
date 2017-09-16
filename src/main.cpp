@@ -172,7 +172,7 @@ double cost_fesible_lane(int target_lane) {
 }
 
 // give penalty if we are not close to the target speed
-double cost_speed(int target_lane, double car_s, json::basic_json sensor_fusion) {
+double cost_speed(int target_lane, double car_s, json sensor_fusion) {
   int cloest_car_s = car_s + 50;
   double cloest_car_check_speed = 50;
 
@@ -202,7 +202,7 @@ double cost_middle_lane(int target_lane) {
 }
 
 // give bonus if there is no car on target lane
-double cost_lane_traffic(int target_lane, double car_s, json::basic_json sensor_fusion) {
+double cost_lane_traffic(int target_lane, double car_s, json sensor_fusion) {
   int cloest_car_s = car_s + 100;
 
   for (size_t i = 0; i < sensor_fusion.size(); i++) {
@@ -221,7 +221,7 @@ double cost_lane_traffic(int target_lane, double car_s, json::basic_json sensor_
   return -10;
 }
 
-double cost_collision(int target_lane, double car_s, double car_d, size_t prev_size, json::basic_json sensor_fusion) {
+double cost_collision(int target_lane, double car_s, double car_d, size_t prev_size, json sensor_fusion) {
   int current_lane = floor(car_d/4);
 
   if (current_lane == target_lane) {
@@ -249,7 +249,7 @@ double cost_collision(int target_lane, double car_s, double car_d, size_t prev_s
   return 0;
 }
 
-int best_lane(json::basic_json j) {
+int best_lane(json j) {
   // Main car's localization Data
   double car_x = j[1]["x"];
   double car_y = j[1]["y"];
@@ -259,14 +259,14 @@ int best_lane(json::basic_json j) {
   double car_speed = j[1]["speed"];
 
   // Previous path data given to the Planner
-  json::basic_json previous_path_x = j[1]["previous_path_x"];
-  json::basic_json previous_path_y = j[1]["previous_path_y"];
+  json previous_path_x = j[1]["previous_path_x"];
+  json previous_path_y = j[1]["previous_path_y"];
   // Previous path's end s and d values
   double end_path_s = j[1]["end_path_s"];
   double end_path_d = j[1]["end_path_d"];
 
   // Sensor Fusion Data, a list of all other cars on the same side of the road.
-  json::basic_json sensor_fusion = j[1]["sensor_fusion"];
+  json sensor_fusion = j[1]["sensor_fusion"];
 
   int current_lane = floor(car_d/4);
 
@@ -353,7 +353,7 @@ int main() {
       auto s = hasData(data);
 
       if (s != "") {
-        json::basic_json j = json::parse(s);
+        json j = json::parse(s);
 
         string event = j[0].get<string>();
 
@@ -369,14 +369,14 @@ int main() {
           double car_speed = j[1]["speed"];
 
           // Previous path data given to the Planner
-          json::basic_json previous_path_x = j[1]["previous_path_x"];
-          json::basic_json previous_path_y = j[1]["previous_path_y"];
+          json previous_path_x = j[1]["previous_path_x"];
+          json previous_path_y = j[1]["previous_path_y"];
           // Previous path's end s and d values
           double end_path_s = j[1]["end_path_s"];
           double end_path_d = j[1]["end_path_d"];
 
           // Sensor Fusion Data, a list of all other cars on the same side of the road.
-          json::basic_json sensor_fusion = j[1]["sensor_fusion"];
+          json sensor_fusion = j[1]["sensor_fusion"];
 
           lane = floor(car_d/4);
 
