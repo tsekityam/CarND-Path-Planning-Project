@@ -160,6 +160,7 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 
 }
 
+// give penalty if using the lane is not feaible
 double cost_fesible_lane(int target_lane) {
   if (target_lane < 0) {
     return 999;
@@ -170,6 +171,7 @@ double cost_fesible_lane(int target_lane) {
   }
 }
 
+// give penalty if we are not close to the target speed
 double cost_speed(int target_lane, double car_s, json::basic_json sensor_fusion) {
   int cloest_car_s = car_s + 50;
   double cloest_car_check_speed = 50;
@@ -194,10 +196,12 @@ double cost_speed(int target_lane, double car_s, json::basic_json sensor_fusion)
   return 50 - min(cloest_car_check_speed, 50.0);
 }
 
+// give penalty if we are not close to middle lane
 double cost_middle_lane(int target_lane) {
   return abs((1 - target_lane) * 2);
 }
 
+// give bonus if there is no car on target lane
 double cost_lane_traffic(int target_lane, double car_s, json::basic_json sensor_fusion) {
   int cloest_car_s = car_s + 100;
 
